@@ -20,7 +20,5 @@ public class App {
 		process(r1);
 		process(r2);
 		process(() -> System.out.println("Hello World3"));				// 3. 전달된 람다 표현식
-
 	}
-
 }

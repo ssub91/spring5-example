@@ -7,7 +7,7 @@ import java.util.List;
 /* 동작 파라미터화 기법 중 람다 표현식을 사용한 기법 */
 public class App {
 	
-	public static List<Apple> filterApples(List<Apple> inventory, ApplePredicate p /* 인터페이스 인수를 통해 한개의 파라미터로 다양한 동작을 수행할 수 있다.*/ ) {
+	public static List<Apple> filterApples(List<Apple> inventory, ApplePredicate p) {
 		List<Apple> result = new ArrayList<Apple>();
 		
 		for (Apple apple : inventory) {
@@ -29,7 +29,7 @@ public class App {
 
 		List<Apple> redApples = filterApples(inventory, (Apple apple) -> "red".equals(apple.getColor()));
 		List<Apple> heavyApples = filterApples(inventory, (Apple apple) -> apple.getWeight() > 150);
-		List<Apple> greenHeavyApples = filterApples(inventory, (Apple apple) -> "green".equals(apple.getColor()) && apple.getWeight() > 150	);
+		List<Apple> greenHeavyApples = filterApples(inventory, (Apple apple) -> "green".equals(apple.getColor()) && apple.getWeight() > 150);
 		
 		System.out.println(redApples);
 		System.out.println(heavyApples);

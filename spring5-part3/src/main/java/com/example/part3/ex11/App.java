@@ -16,36 +16,57 @@ public class App {
 	public static void ex01() {
 		Predicate<Apple> p = (Apple a) -> a.getWeight() > 150;
 		System.out.println(p.test(new Apple(200, "green")));
+		
+		// 인터페이스 Predicate<T>의 함수 디스크립터
+		// T -> boolean 
 	}
 
 	public static void ex02() {
 		Function<String, Integer> f = (String s) -> s.length();
 		System.out.println(f.apply("Hello World"));
+
+		// 인터페이스 Function<T, R>의 함수 디스크립터
+		// T -> R 
 	}
 
 	public static void ex03() {
 		Consumer<Apple> c = (Apple a) -> System.out.println(a);
 		c.accept(new Apple(200, "green"));
+
+		// 인터페이스 Consumer<T>의 함수 디스크립터
+		// T -> void 
 	}
 
 	public static void ex04() {
 		Supplier<Integer> s = () -> 2018;
 		System.out.println(s.get());
+
+		// 인터페이스 Supplier<T>의 함수 디스크립터
+		// () -> T 
 	}
 
 	public static void ex05() {
 		BiPredicate<Apple, Apple> bp = (Apple a1, Apple a2) -> a1.getWeight() == a2.getWeight();
 		System.out.println(bp.test(new Apple(300, "red"), new Apple(200, "red")));
+	
+		// 인터페이스 BiPredicate<L, R>의 함수 디스크립터
+		// (L, R) -> boolean 
 	}
 	
 	public static void ex06() {
 		BiFunction<Apple, Apple, Integer> bf = (Apple a1, Apple a2) -> a1.getWeight().compareTo(a2.getWeight());
 		System.out.println(bf.apply(new Apple(300, "red"), new Apple(200, "red")));
+
+		// 인터페이스 BiFunction<T, U, R>의 함수 디스크립터
+		// (T, U) -> R 
 	}
 
 	public static void ex07() {
 		BiConsumer<Integer, Integer> bc = (Integer x, Integer y) -> System.out.println(x + " + " + y + " = " + (x + y));
 		bc.accept(100, 200);
+
+		// 인터페이스 BiConsumer<T, U>의 함수 디스크립터
+		// (T, U) -> void
 	}
 	
 	
