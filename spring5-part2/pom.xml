@@ -7,5 +7,15 @@
 		<artifactId>spring5-example</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring5-part3</artifactId>
+	<artifactId>spring5-part2</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<version>2.0.3.RELEASE</version>
+		</dependency>
+
+	</dependencies>
+
 </project>

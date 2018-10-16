@@ -24,5 +24,6 @@
 	
 	<modules>
 		<module>spring5-part3</module>
+		<module>spring5-part2</module>
 	</modules>
 </project>
