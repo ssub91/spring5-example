@@ -8,6 +8,7 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import reactor.ipc.netty.http.server.HttpServer;
 
+/* 유틸 메서드 정적 임포트 */
 public class SSuber04 {
 
 	public static void main(String[] args) throws Exception {

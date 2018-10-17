@@ -12,6 +12,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.server.HttpServer;
 
+/* 람다 */
 public class SSuber02 {
 
 	public static void main(String[] args) throws Exception {

@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.server.HttpServer;
 
+/* 추론 */
 public class SSuber03 {
 
 	public static void main(String[] args) throws Exception {
