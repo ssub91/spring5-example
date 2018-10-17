@@ -24,7 +24,5 @@ public class SSuber05 {
 		.newHandler(new ReactorHttpHandlerAdapter(toHttpHandler(route(path("/hello/{name}"), SSuber05::helloHandler)))).subscribe();
 		
 		System.in.read();
-
-		System.in.read();
 	}
 }
