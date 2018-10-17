@@ -15,6 +15,7 @@ import reactor.ipc.netty.http.server.HttpServer;
 public class SSuber02 {
 
 	public static void main(String[] args) throws Exception {
+		
 		HandlerFunction<ServerResponse> helloHandler = (ServerRequest req) -> ServerResponse.ok().syncBody("Hello " + req.pathVariable("name"));
 		RouterFunction<ServerResponse> routerFunction = (ServerRequest req) -> RequestPredicates.path("/hello/{name}").test(req) ? Mono.just(helloHandler) : Mono.empty();
 				
