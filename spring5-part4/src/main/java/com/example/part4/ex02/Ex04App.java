@@ -14,13 +14,12 @@ import org.reactivestreams.Subscription;
  * 
  * Refactoring:
  *         
- * Operator의 Subscriber 확장 (delegation)
+ * Operator(Map)의 Subscriber확장 (delegation)
  * 
  * cf) Spring의 xxxAdapter
  *            
  */
 public class Ex04App {
-	
 	public static void main(String[] args) throws Exception {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 		
@@ -32,16 +31,14 @@ public class Ex04App {
 		op2.subscribe(s);
 	}
 	
-	public static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> f){
-		return new Publisher<R>() {
-			
+	public static Publisher<Integer> mapPub(Publisher<Integer> publisher, Function<Integer, Integer> f){
+		return new Publisher<Integer>() {
 			@Override
-			public void subscribe(Subscriber<? super R> subscriber) {
-				
-				publisher.subscribe(new DelegateSub<T, R>(subscriber) {
+			public void subscribe(Subscriber<? super Integer> subscriber) {
+				publisher.subscribe(new DelegateSub(subscriber) {
 					@Override
-					public void onNext(T t) {
-						subscriber.onNext(f.apply(t));
+					public void onNext(Integer i) {
+						subscriber.onNext(f.apply(i));
 					}
 					
 				});
@@ -49,11 +46,10 @@ public class Ex04App {
 		};
 	}
 
-	private static class DelegateSub<T, R> implements Subscriber<T> {
-		
-		private final Subscriber subscriber;
+	private static class DelegateSub implements Subscriber<Integer> {
+		private final Subscriber<? super Integer> subscriber;
 
-		private DelegateSub(Subscriber<? super R> subscriber) {
+		private DelegateSub(Subscriber<? super Integer> subscriber) {
 			this.subscriber = subscriber;
 		}
 
@@ -63,8 +59,8 @@ public class Ex04App {
 		}
 
 		@Override
-		public void onNext(T t) {
-			subscriber.onNext(t);
+		public void onNext(Integer i) {
+			subscriber.onNext(i);
 		}
 
 		@Override
@@ -78,9 +74,8 @@ public class Ex04App {
 		}
 	}
 	
-	public static <T> Subscriber<T> logSub() {
-		return new Subscriber<T>() {
-			
+	public static Subscriber<Integer> logSub() {
+		return new Subscriber<Integer>() {
 			@Override
 			public void onSubscribe(Subscription s) {
 				System.out.println("onSubscription");
@@ -88,8 +83,8 @@ public class Ex04App {
 			}
 
 			@Override
-			public void onNext(T t) {
-				System.out.println("onNext: " + t);
+			public void onNext(Integer i) {
+				System.out.println("onNext: " + i);
 			}
 
 			@Override
@@ -104,18 +99,13 @@ public class Ex04App {
 		};
 	}
 	
-	public static <T> Publisher<T> iterPub(Iterable<T> iter) {
-		
-		return new Publisher<T>() {
-			
+	public static Publisher<Integer> iterPub(Iterable<Integer> iter) {
+		return new Publisher<Integer>() {
 			@Override
-			public void subscribe(Subscriber<? super T> sub) {
-
+			public void subscribe(Subscriber<? super Integer> sub) {
 				sub.onSubscribe(new Subscription() {
-
 					@Override
 					public void request(long n) {
-
 						try {
 							iter.forEach(i -> sub.onNext(i));
 							sub.onComplete();
@@ -127,7 +117,6 @@ public class Ex04App {
 					@Override
 					public void cancel() {
 					}
-
 				});
 			}
 		};

@@ -9,6 +9,14 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+/*
+ * < Example of Operator IV > 
+ * 
+ * 
+ * Ex05의 sum operation -> reduce 연산으로 일반화
+ * Operator(Reduce)의 Subscriber확장 (delegation)
+ *            
+ */
 public class Ex06App {
 	public static void main(String[] args) throws Exception {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
@@ -23,51 +31,36 @@ public class Ex06App {
 	}
 
 
-	public static <T> Publisher<T> reducePub(Publisher<T> publisher, T init, BiFunction<T, T, T> f){
-		return new Publisher<T>() {
-			
+	public static <T, R> Publisher<R> reducePub(Publisher<T> publisher, R init, BiFunction<R, T, R> f){
+		return subscriber -> publisher.subscribe(new DelegateSub<T, R>(subscriber) {
+			R sum = init;
+					
 			@Override
-			public void subscribe(Subscriber<? super T> subscriber) {
-				publisher.subscribe(new DelegateSub<T>(subscriber) {
-					T sum = init;
-					
-					@Override
-					public void onNext(T t) {
-						sum = f.apply(sum, t);
-					}
-
-					@Override
-					public void onComplete() {
-						super.onNext(sum);
-						super.onComplete();
-					}
-					
-				});
+			public void onNext(T t) {
+				sum = f.apply(sum, t);
 			}
-		};
+
+			@Override
+			public void onComplete() {
+				subscriber.onNext(sum);
+				subscriber.onComplete();
+			}
+		});
 	}
 	
-	public static <T> Publisher<T> mapPub(Publisher<T> publisher, Function<T, ? extends T> f){
-		return new Publisher<T>() {
-			
+	public static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> f){
+		return subscriber -> publisher.subscribe(new DelegateSub<T, R>(subscriber) {
 			@Override
-			public void subscribe(Subscriber<? super T> subscriber) {
-				
-				publisher.subscribe(new DelegateSub<T>(subscriber) {
-					@Override
-					public void onNext(T t) {
-						super.onNext(f.apply(t));
-					}
-					
-				});
+			public void onNext(T t) {
+				subscriber.onNext(f.apply(t));
 			}
-		};
+		});
 	}
 
-	private static class DelegateSub<T> implements Subscriber<T> {
-		private final Subscriber<? super T> subscriber;
+	private static class DelegateSub<T, R> implements Subscriber<T> {
+		private final Subscriber subscriber;
 
-		private DelegateSub(Subscriber<? super T> subscriber) {
+		private DelegateSub(Subscriber<? super R> subscriber) {
 			this.subscriber = subscriber;
 		}
 
@@ -94,7 +87,6 @@ public class Ex06App {
 	
 	public static <T> Subscriber<T> logSub() {
 		return new Subscriber<T>() {
-			
 			@Override
 			public void onSubscribe(Subscription s) {
 				System.out.println("onSubscription");
@@ -119,31 +111,20 @@ public class Ex06App {
 	}
 	
 	public static <T> Publisher<T> iterPub(Iterable<T> iter) {
-		
-		return new Publisher<T>() {
-			
+		return subscriber -> subscriber.onSubscribe(new Subscription() {
 			@Override
-			public void subscribe(Subscriber<? super T> sub) {
-
-				sub.onSubscribe(new Subscription() {
-
-					@Override
-					public void request(long n) {
-
-						try {
-							iter.forEach(i -> sub.onNext(i));
-							sub.onComplete();
-						} catch (Exception e) {
-							sub.onError(e);
-						}
-					}
-
-					@Override
-					public void cancel() {
-					}
-
-				});
+			public void request(long n) {
+				try {
+					iter.forEach(i -> subscriber.onNext(i));
+					subscriber.onComplete();
+				} catch (Exception e) {
+					subscriber.onError(e);
+				}
 			}
-		};
+
+			@Override
+			public void cancel() {
+			}
+		});
 	}
 }

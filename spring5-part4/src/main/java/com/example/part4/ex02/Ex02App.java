@@ -20,18 +20,15 @@ import org.reactivestreams.Subscription;
  *                       
  */
 public class Ex02App {
-	
 	public static void main(String[] args) throws Exception {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 		Subscriber<Integer> s = logSub();
 
 		p.subscribe(s);
 	}
-
 	
-	public static <T> Subscriber<T> logSub() {
-		return new Subscriber<T>() {
-			
+	public static Subscriber<Integer> logSub() {
+		return new Subscriber<Integer>() {
 			@Override
 			public void onSubscribe(Subscription s) {
 				System.out.println("onSubscription");
@@ -39,8 +36,8 @@ public class Ex02App {
 			}
 
 			@Override
-			public void onNext(T t) {
-				System.out.println("onNext: " + t);
+			public void onNext(Integer i) {
+				System.out.println("onNext: " + i);
 			}
 
 			@Override
@@ -52,22 +49,16 @@ public class Ex02App {
 			public void onComplete() {
 				System.out.println("onComplete");
 			}
-			
 		};
 	}
 	
-	public static <T> Publisher<T> iterPub(Iterable<T> iter) {
-		
-		return new Publisher<T>() {
-			
+	public static Publisher<Integer> iterPub(Iterable<Integer> iter) {
+		return new Publisher<Integer>() {
 			@Override
-			public void subscribe(Subscriber<? super T> sub) {
-
+			public void subscribe(Subscriber<? super Integer> sub) {
 				sub.onSubscribe(new Subscription() {
-
 					@Override
 					public void request(long n) {
-
 						try {
 							iter.forEach(i -> sub.onNext(i));
 							sub.onComplete();
@@ -79,7 +70,6 @@ public class Ex02App {
 					@Override
 					public void cancel() {
 					}
-
 				});
 			}
 		};

@@ -9,49 +9,22 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 /*
- * < Example of Operator IV > 
+ * < Example of Operator III > 
  * 
  * 
- * sumPub 추가
+ * Ex04Generic Lambda 전환
  *            
  */
-
-public class Ex05App {
-	
+public class Ex04LamdaGenericApp {
 	public static void main(String[] args) throws Exception {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 		
 		Publisher<Integer> op1 = mapPub(p, s -> s * s);
 		Publisher<Integer> op2 = mapPub(op1, s -> -s);
-		Publisher<Integer> op3 = sumPub(op2);
 		
 		Subscriber<Integer> s = logSub();
 
-		op3.subscribe(s);
-	}
-
-	public static Publisher<Integer> sumPub(Publisher<Integer> publisher){
-		return new Publisher<Integer>() {
-			
-			@Override
-			public void subscribe(Subscriber<? super Integer> subscriber) {
-				publisher.subscribe(new DelegateSub<Integer, Integer>(subscriber) {
-					Integer sum = 0;
-					
-					@Override
-					public void onNext(Integer t) {
-						sum += t;
-					}
-
-					@Override
-					public void onComplete() {
-						subscriber.onNext(sum);
-						subscriber.onComplete();
-					}
-					
-				});
-			}
-		};
+		op2.subscribe(s);
 	}
 	
 	public static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> f){

@@ -2,9 +2,6 @@ package com.example.part4.ex02;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
@@ -38,57 +35,46 @@ public class Ex01App {
 	 * 
 	 * Publish --------> [Data] --------> Subscriber
 	 * 
-	 *          <- subscribe(Subscriber)
-	 *          
-	 *          -> Subsciber.onSubscribe(Subscription)
+	 * <- subscribe(Subscriber)
+	 * 
+	 * -> Subsciber.onSubscribe(Subscription)
 	 *
-	 *          <- Subscription.request(capacity)
+	 * <- Subscription.request(capacity)
 	 *
-	 *          -> Subsciber.onNext(data)
-	 *          
-	 *          -> Subsciber.onNext(ata)
-	 *          
-	 *          -> .
-	 *          
-	 *          -> .
-	 *          
-	 *          -> Subscriber.onComplete()
-	 *          
+	 * -> Subsciber.onNext(data)
+	 * 
+	 * -> Subsciber.onNext(ata)
+	 * 
+	 * -> .
+	 * 
+	 * -> .
+	 * 
+	 * -> Subscriber.onComplete()
+	 * 
 	 */
 
 	public static void main(String[] args) throws Exception {
-		
 		Iterable<Integer> iter = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-		ExecutorService es = Executors.newSingleThreadExecutor();
-		
-		Publisher<Integer> p = new Publisher<Integer>() {
 
+		Publisher<Integer> p = new Publisher<Integer>() {
 			@Override
 			public void subscribe(Subscriber<? super Integer> sub) {
-
 				Iterator<Integer> it = iter.iterator();
 
 				sub.onSubscribe(new Subscription() { // Subscription: Back Pressure
-
 					@Override
 					public void request(long n) {
-						
-						es.execute(() -> {
-							
-							System.out.println("Subscription::request: " + Thread.currentThread().getId());
-
-							try {
-								for (int i = 0; i < n; i++) {
-									if (it.hasNext()) {
-										sub.onNext(it.next());
-									} else {
-										sub.onComplete();
-									}
+						try {
+							for(int i = 0; i < n; i++) {
+								if (it.hasNext()) {
+									sub.onNext(it.next());
+								} else {
+									sub.onComplete();
 								}
-							} catch (Exception e) {
-								sub.onError(e);
 							}
-						});
+						} catch (Exception e) {
+							sub.onError(e);
+						}
 					}
 
 					@Override
@@ -126,8 +112,5 @@ public class Ex01App {
 		};
 
 		p.subscribe(s);
-		
-		es.awaitTermination(10, TimeUnit.HOURS);
-		es.shutdown();
 	}
 }
