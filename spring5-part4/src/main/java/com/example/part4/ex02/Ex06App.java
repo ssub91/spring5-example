@@ -32,7 +32,7 @@ public class Ex06App {
 
 
 	public static <T, R> Publisher<R> reducePub(Publisher<T> publisher, R init, BiFunction<R, T, R> f){
-		return subscriber -> publisher.subscribe(new DelegateSub<T, R>(subscriber) {
+		return subscriber -> publisher.subscribe(new DelegateSubscriber<T, R>(subscriber) {
 			R sum = init;
 					
 			@Override
@@ -49,7 +49,7 @@ public class Ex06App {
 	}
 	
 	public static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> f){
-		return subscriber -> publisher.subscribe(new DelegateSub<T, R>(subscriber) {
+		return subscriber -> publisher.subscribe(new DelegateSubscriber<T, R>(subscriber) {
 			@Override
 			public void onNext(T t) {
 				subscriber.onNext(f.apply(t));
@@ -57,10 +57,10 @@ public class Ex06App {
 		});
 	}
 
-	private static class DelegateSub<T, R> implements Subscriber<T> {
+	private static class DelegateSubscriber<T, R> implements Subscriber<T> {
 		private final Subscriber subscriber;
 
-		private DelegateSub(Subscriber<? super R> subscriber) {
+		private DelegateSubscriber(Subscriber<? super R> subscriber) {
 			this.subscriber = subscriber;
 		}
 

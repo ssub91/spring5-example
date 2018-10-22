@@ -35,7 +35,7 @@ public class Ex04App {
 		return new Publisher<Integer>() {
 			@Override
 			public void subscribe(Subscriber<? super Integer> subscriber) {
-				publisher.subscribe(new DelegateSub(subscriber) {
+				publisher.subscribe(new DelegateSubscriber(subscriber) {
 					@Override
 					public void onNext(Integer i) {
 						subscriber.onNext(f.apply(i));
@@ -46,10 +46,10 @@ public class Ex04App {
 		};
 	}
 
-	private static class DelegateSub implements Subscriber<Integer> {
+	private static class DelegateSubscriber implements Subscriber<Integer> {
 		private final Subscriber<? super Integer> subscriber;
 
-		private DelegateSub(Subscriber<? super Integer> subscriber) {
+		private DelegateSubscriber(Subscriber<? super Integer> subscriber) {
 			this.subscriber = subscriber;
 		}
 
