@@ -7,8 +7,13 @@
 		<artifactId>spring5-example</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>spring5-part2</artifactId>
+	<artifactId>spring5-part4</artifactId>
 
-
-
+	<dependencies>
+		<dependency>
+			<groupId>org.reactivestreams</groupId>
+			<artifactId>reactive-streams</artifactId>
+			<version>1.0.2</version>
+		</dependency>
+	</dependencies>
 </project>
