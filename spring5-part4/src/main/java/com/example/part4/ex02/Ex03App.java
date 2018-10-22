@@ -25,10 +25,8 @@ public class Ex03App {
 		
 		Publisher<Integer> op1 = mapPub(p, s -> s * s);
 		Publisher<Integer> op2 = mapPub(op1, s -> -s);
-		
-		Subscriber<Integer> s = logSub();
 
-		op2.subscribe(s);
+		op2.subscribe(logSub());
 	}
 
 	public static Publisher<Integer> mapPub(Publisher<Integer> publisher, Function<Integer, Integer> f){

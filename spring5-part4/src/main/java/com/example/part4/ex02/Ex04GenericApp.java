@@ -20,11 +20,9 @@ public class Ex04GenericApp {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 		
 		Publisher<Integer> op1 = mapPub(p, s -> s * s);
-		Publisher<Integer> op2 = mapPub(op1, s -> -s);
-		
-		Subscriber<Integer> s = logSub();
+		Publisher<String> op2 = mapPub(op1, s -> "[" + s + "]" );
 
-		op2.subscribe(s);
+		op2.subscribe(logSub());
 	}
 	
 	public static <T, R> Publisher<R> mapPub(Publisher<T> publisher, Function<T, R> f){

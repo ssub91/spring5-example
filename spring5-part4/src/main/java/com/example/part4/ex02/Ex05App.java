@@ -22,12 +22,9 @@ public class Ex05App {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 		
 		Publisher<Integer> op1 = mapPub(p, s -> s * s);
-		Publisher<Integer> op2 = mapPub(op1, s -> -s);
-		Publisher<Integer> op3 = sumPub(op2);
-		
-		Subscriber<Integer> s = logSub();
+		Publisher<Integer> op2 = sumPub(op1);
 
-		op3.subscribe(s);
+		op2.subscribe(logSub());
 	}
 
 	public static Publisher<Integer> sumPub(Publisher<Integer> publisher){

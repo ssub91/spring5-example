@@ -22,9 +22,8 @@ import org.reactivestreams.Subscription;
 public class Ex02App {
 	public static void main(String[] args) throws Exception {
 		Publisher<Integer> p = iterPub(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
-		Subscriber<Integer> s = logSub();
 
-		p.subscribe(s);
+		p.subscribe(logSub());
 	}
 	
 	public static Subscriber<Integer> logSub() {
