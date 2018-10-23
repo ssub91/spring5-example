@@ -11,8 +11,16 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.server.HttpServer;
 
-/* 추론 */
-public class SSuber03 {
+
+/* 
+ * Spring WebFlux(Reacative Web)를 이용한 개발
+ * 
+ * 1.함수형 스타일  Webflux(RouterFunction + HandlerFunction 을 이용한 개발)
+ * 
+ * 추론
+ *
+ **/
+public class Ex03App {
 
 	public static void main(String[] args) throws Exception {
 		

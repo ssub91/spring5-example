@@ -1,73 +1,86 @@
 package com.example.part4.ex04;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.util.concurrent.FailureCallback;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.util.concurrent.SuccessCallback;
 
 /**
- * 비동기 작업 결과를 가져오는 방법1:
  * 
- * Future와 같은 핸들러(객체) 반환
+ * 스프링에서의 비동기 처리:
  * 
+ * @Async + Callback(ListenableFuture from Spring 4.0)
+ * 
+ * 장점: Non-Blocking 으로 비동기 처리 결과를 받아 올 수 있다.
+ *
  */
 public class Ex02App {
-	
-	// get 메서드 사용
-	public static void ex01() throws InterruptedException, ExecutionException {
-		ExecutorService es = Executors.newCachedThreadPool();
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		
-		Future<String> f = es.submit(new Callable<String>() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext( ContextConfig.class );
+		MyService myService = context.getBean( MyService.class );
+
+		myService.service().addCallback(new SuccessCallback<String>() {
 
 			@Override
-			public String call() throws Exception {
-				System.out.println("[Thread-" + Thread.currentThread().getId() +"] 긴작업1");
-				Thread.sleep(3000);
-				return "Hello";
+			public void onSuccess(String result) {
+				System.out.println("[Thread-" + Thread.currentThread().getId() +"] success: " + result);
 			}
 			
-		});
-		
-		System.out.println("[Thread-" + Thread.currentThread().getId() +"] 긴작업2");
-		Thread.sleep(2000);
-		System.out.println("[Thread-" + Thread.currentThread().getId() +"] Exit");
-
-		System.out.println("[Thread-" + Thread.currentThread().getId() +"] " + f.get());  // Blocking!!!
-
-		es.shutdown();
-	}
-	
-	
-	// Future 객체의 isDone을 사용하여 루프에서
-	// 비동기 작업의 상태를 계속 확인하면서 논블록킹 처럼 돌게할 순 있다.
-	public static void ex02() throws InterruptedException, ExecutionException {
-
-		ExecutorService es = Executors.newCachedThreadPool();
-		
-		Future<String> f = es.submit(new Callable<String>() {
+		}, new FailureCallback() {
 			@Override
-			public String call() throws Exception {
-				System.out.println("[Thread-" + Thread.currentThread().getId() +"] 긴작업2");
-				Thread.sleep(5000);
-				return "Hello";
+			public void onFailure(Throwable ex) {
+				System.out.println("[Thread-" + Thread.currentThread().getId() +"] error: " + ex);
 			}
 		});
-
-		while(f.isDone() == false) {
+		
+		for(int i = 0; i < 5; i++) {
 			System.out.println("[Thread-" + Thread.currentThread().getId() +"] 긴작업1");
 			Thread.sleep(1000);
 		}
-		System.out.println("[Thread-" + Thread.currentThread().getId() +"] " + f.get());
-		System.out.println("[Thread-" + Thread.currentThread().getId() +"] Exit");
+		System.out.println("[Thread-" + Thread.currentThread().getId() +"] Exit");	
 		
-		es.shutdown();
+		context.close();
 	}
 	
 	
-
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
-		// ex01();
-		ex02();
-	}	
+	@Configuration
+	@EnableAsync
+	public static class ContextConfig {
+		@Bean
+		MyService myService() {
+			return new MyService();
+		}
+		
+		@Bean
+		TaskExecutor taskExecutor() {
+			ThreadPoolTaskExecutor taskExecutor =  new ThreadPoolTaskExecutor();
+			taskExecutor.setCorePoolSize(10);
+			taskExecutor.setMaxPoolSize(100);
+			taskExecutor.setQueueCapacity(200);
+			taskExecutor.setThreadNamePrefix("mythread");
+			taskExecutor.initialize();
+			
+			return taskExecutor;
+		}
+		
+	}
+	
+	public static class MyService {
+		@Async
+		public ListenableFuture<String> service() throws InterruptedException {
+			System.out.println("[Thread-" + Thread.currentThread().getId() +"] 긴작업2");
+			Thread.sleep(5000);
+			return new AsyncResult<String>("Hello");
+		}
+	}
 }

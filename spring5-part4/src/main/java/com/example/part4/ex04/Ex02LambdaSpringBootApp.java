@@ -1,4 +1,4 @@
-package com.example.part4.ex05;
+package com.example.part4.ex04;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;

@@ -12,24 +12,20 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 import reactor.ipc.netty.http.server.HttpServer;
 
-/* 익명 클래스 */
-public class SSuber01 {
+/* 
+ * Spring WebFlux(Reacative Web)를 이용한 개발
+ * 
+ * 1.함수형 스타일  Webflux(RouterFunction + HandlerFunction 을 이용한 개발)
+ * 
+ * 람다
+ *
+ **/
+public class Ex02App {
 
 	public static void main(String[] args) throws Exception {
 		
-		HandlerFunction<ServerResponse> helloHandler = new HandlerFunction<ServerResponse>(){
-			@Override
-			public Mono<ServerResponse> handle(ServerRequest req) {
-					return ServerResponse.ok().syncBody("Hello " + req.pathVariable("name"));
-			}
-		};
-		
-		RouterFunction<ServerResponse> routerFunction = new RouterFunction<ServerResponse>() {
-			@Override
-			public Mono<HandlerFunction<ServerResponse>> route(ServerRequest request) {
-				return RequestPredicates.path("/hello/{name}").test(request) ? Mono.just(helloHandler) : Mono.empty();
-			}
-		};
+		HandlerFunction<ServerResponse> helloHandler = (ServerRequest req) -> ServerResponse.ok().syncBody("Hello " + req.pathVariable("name"));
+		RouterFunction<ServerResponse> routerFunction = (ServerRequest req) -> RequestPredicates.path("/hello/{name}").test(req) ? Mono.just(helloHandler) : Mono.empty();
 				
 		HttpHandler httpHandler = RouterFunctions.toHttpHandler(routerFunction);
 		ReactorHttpHandlerAdapter adapter = new ReactorHttpHandlerAdapter(httpHandler);
@@ -37,6 +33,6 @@ public class SSuber01 {
 		HttpServer server = HttpServer.create("localhost", 8088);
 		server.newHandler(adapter).subscribe();
 
-		System.in.read();		
+		System.in.read();	
 	}
 }
